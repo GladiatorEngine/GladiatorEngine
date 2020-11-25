@@ -17,6 +17,6 @@ typedef struct {
 
 AssetPackFile* asset_pack_init(const char * __restrict filename);
 long asset_pack_location(AssetPackFile* apf);
-int32_t asset_pack_get_next_block_length(AssetPackFile* apf);
-uint8_t* asset_pack_get_block(AssetPackFile* apf, int32_t assetBlockLength);
+int64_t asset_pack_get_next_block_length(AssetPackFile* apf);
+uint8_t* asset_pack_get_block(AssetPackFile* apf, int64_t assetBlockLength);
 void asset_pack_deinit(AssetPackFile* apf);

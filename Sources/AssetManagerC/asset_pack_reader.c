@@ -25,10 +25,10 @@ AssetPackFile* asset_pack_init(const char * __restrict filename) {
     return p;
 }
 
-int32_t asset_pack_get_next_block_length(AssetPackFile* apf) {
+int64_t asset_pack_get_next_block_length(AssetPackFile* apf) {
     // Get block length
     int32_t assetBlockLength;
-    fread(&assetBlockLength, sizeof(int32_t), 1, apf->file);
+    fread(&assetBlockLength, sizeof(int64_t), 1, apf->file);
     return assetBlockLength;
 }
 
@@ -36,7 +36,7 @@ long asset_pack_location(AssetPackFile* apf) {
     return ftell(apf->file);
 }
 
-uint8_t* asset_pack_get_block(AssetPackFile* apf, int32_t assetBlockLength) {
+uint8_t* asset_pack_get_block(AssetPackFile* apf, int64_t assetBlockLength) {
     FILE* f = apf->file;
     
     // Read bytes for this length
