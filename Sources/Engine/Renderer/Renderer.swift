@@ -48,7 +48,7 @@ public class Renderer: NSObject, MTKViewDelegate {
         
         vertexBuffer = mesh.vertexBuffers[0].buffer
         
-        let library = device.makeDefaultLibrary()
+        let library = device.makeDefaultLibrary(bundle: Bundle.module)
         let vertexFunction = library?.makeFunction(name: "vertex_main")
         let fragmentFunction = library?.makeFunction(name: "fragment_main")
         
