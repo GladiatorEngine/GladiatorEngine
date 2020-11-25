@@ -36,8 +36,12 @@ let package = Package(
         .target(
             name: "AssetManager",
             dependencies: [
-                .product(name: "Crypto", package: "swift-crypto")
+                .product(name: "Crypto", package: "swift-crypto"),
+                .byName(name: "AssetManagerC")
             ]),
+        .target(
+            name: "AssetManagerC",
+            dependencies: []),
         .testTarget(
             name: "AssetManagerTests",
             dependencies: ["AssetManager"]),

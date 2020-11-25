@@ -1,30 +1,6 @@
 import Foundation
 import Crypto
-
-// low level file rw
-#if os(Linux)
-// Linux uses Glibc
-import struct Glibc.FILE
-import func   Glibc.fopen
-import func   Glibc.fread
-import func   Glibc.fwrite
-import func   Glibc.fseek
-import func   Glibc.ftell
-import func   Glibc.fclose
-import func   Glibc.rewind
-import func   Glibc.SEEK_END
-#else
-// OS X uses Darwin
-import struct Darwin.C.FILE
-import func   Darwin.C.fopen
-import func   Darwin.C.fread
-import func   Darwin.C.fwrite
-import func   Darwin.C.fseek
-import func   Darwin.C.ftell
-import func   Darwin.C.fclose
-import func   Darwin.C.rewind
-import var    Darwin.C.SEEK_END
-#endif
+import AssetManagerC
 
 public class AssetManager {
     public private(set) var textures: [Texture] = []
@@ -93,26 +69,13 @@ public class AssetManager {
     }
     
     public func loadAssetPackC(path: String) throws {
-        let filePointer = fopen(path, "rw")
-        
-        fseek(filePointer, 0, SEEK_END)
-        let packLength = ftell(filePointer)
-        rewind(filePointer)
-        
-        // Verify that it's a pack
-        var assetTypeByte = [UInt8]()
-        fread(&assetTypeByte, MemoryLayout<UInt8>.size, 1, filePointer)
-        
-        while ftell(filePointer) < packLength {
-            var lengthBytes = [UInt8]()
-            fread(&lengthBytes, MemoryLayout<Int>.size, 1, filePointer)
-            let length: Int = Data(lengthBytes).withUnsafeBytes {$0.pointee}
+        let apf = asset_pack_init(path.cString(using: .utf8))!
+        while asset_pack_location(apf) < apf.pointee.size {
+            let blockLength = asset_pack_get_next_block_length(apf)
+            let block = asset_pack_get_block(apf, blockLength)!
+            let data = Data(Array(UnsafeBufferPointer(start: block, count: Int(blockLength))))
             
-            var assetBytes = [UInt8]()
-            fread(&assetBytes, length, 1, filePointer)
-            
-            // Load to manager
-            let asset = try loadAssetFromData(data: Data(assetBytes), hashed: false)
+            let asset = try loadAssetFromData(data: data, hashed: false)
             
             switch asset.0 {
             case .texture:
@@ -129,8 +92,6 @@ public class AssetManager {
                 break
             }
         }
-        
-        fclose(filePointer)
     }
     
     private func loadAsset(path: String) throws -> (AssetType, Data) {
