@@ -37,19 +37,13 @@ public class AssetManager {
     }
     
     public func loadAssetPack(path: String) throws {
-        let assetTuple = try self.loadAsset(path: path)
-        if assetTuple.0 != .pack {
-            fatalError("\(path) is not a pack of assets")
-        }
-        try loadAssetPack(data: assetTuple.1)
-    }
-    
-    public func loadAssetPack(data packData: Data) throws {
-        var position = 0
-        while position < packData.endIndex {
-            let length: Int = packData.subdata(in: position..<position+MemoryLayout<Int>.size).withUnsafeBytes {$0.pointee} + 1
-            let asset = try loadAssetFromData(data: packData.subdata(in: position+MemoryLayout<Int>.size..<position+MemoryLayout<Int>.size+length), hashed: false)
-            position = position+MemoryLayout<Int>.size+length
+        let apf = asset_pack_init(path.cString(using: .utf8))!
+        while asset_pack_location(apf) < apf.pointee.size {
+            let blockLength = asset_pack_get_next_block_length(apf)
+            let block = asset_pack_get_block(apf, blockLength)!
+            let data = Data(Array(UnsafeBufferPointer(start: block, count: Int(blockLength))))
+            
+            let asset = try loadAssetFromData(data: data, hashed: false)
             
             switch asset.0 {
             case .texture:
@@ -68,14 +62,12 @@ public class AssetManager {
         }
     }
     
-    public func loadAssetPackC(path: String) throws {
-        let apf = asset_pack_init(path.cString(using: .utf8))!
-        while asset_pack_location(apf) < apf.pointee.size {
-            let blockLength = asset_pack_get_next_block_length(apf)
-            let block = asset_pack_get_block(apf, blockLength)!
-            let data = Data(Array(UnsafeBufferPointer(start: block, count: Int(blockLength))))
-            
-            let asset = try loadAssetFromData(data: data, hashed: false)
+    public func loadAssetPack(data packData: Data) throws {
+        var position = 0
+        while position < packData.endIndex {
+            let length: Int = packData.subdata(in: position..<position+MemoryLayout<Int>.size).withUnsafeBytes {$0.pointee} + 1
+            let asset = try loadAssetFromData(data: packData.subdata(in: position+MemoryLayout<Int>.size..<position+MemoryLayout<Int>.size+length), hashed: false)
+            position = position+MemoryLayout<Int>.size+length
             
             switch asset.0 {
             case .texture:
