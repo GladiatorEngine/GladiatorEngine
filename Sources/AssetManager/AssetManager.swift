@@ -1,7 +1,7 @@
 import Foundation
 import Crypto
 
-public struct AssetManager {
+public class AssetManager {
     public private(set) var textures: [Texture] = []
     public private(set) var models: [Model] = []
     
@@ -9,7 +9,7 @@ public struct AssetManager {
         
     }
     
-    public mutating func loadTextureAsset(path: String) throws {
+    public func loadTextureAsset(path: String) throws {
         let assetTuple = try self.loadAsset(path: path)
         if assetTuple.0 != .texture {
             fatalError("\(path) is not a texture")
@@ -18,11 +18,11 @@ public struct AssetManager {
         try loadTextureAsset(data: assetTuple.1)
     }
     
-    public mutating func loadTextureAsset(data: Data) throws {
+    public func loadTextureAsset(data: Data) throws {
         self.textures.append(Texture(sourceData: data))
     }
     
-    public mutating func loadModelAsset(path: String) throws {
+    public func loadModelAsset(path: String) throws {
         let assetTuple = try self.loadAsset(path: path)
         if assetTuple.0 != .model {
             fatalError("\(path) is not a model")
@@ -31,11 +31,11 @@ public struct AssetManager {
         try loadModelAsset(data: assetTuple.1)
     }
     
-    public mutating func loadModelAsset(data: Data) throws {
+    public func loadModelAsset(data: Data) throws {
         self.models.append(Model(sourceData: data))
     }
     
-    public mutating func loadAssetPack(path: String) throws {
+    public func loadAssetPack(path: String) throws {
         let assetTuple = try self.loadAsset(path: path)
         if assetTuple.0 != .pack {
             fatalError("\(path) is not a pack of assets")
@@ -43,7 +43,7 @@ public struct AssetManager {
         try loadAssetPack(data: assetTuple.1)
     }
     
-    public mutating func loadAssetPack(data packData: Data) throws {
+    public func loadAssetPack(data packData: Data) throws {
         var position = 0
         while position < packData.endIndex {
             let length: Int = packData.subdata(in: position..<position+MemoryLayout<Int>.size).withUnsafeBytes {$0.pointee} + 1

@@ -28,7 +28,8 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Engine",
-            dependencies: []),
+            dependencies: ["AssetManager"],
+            resources: [.process("Metal/Shaders.metal")]),
         .testTarget(
             name: "EngineTests",
             dependencies: ["Engine"]),
