@@ -72,6 +72,14 @@ public class Renderer: NSObject, MTKViewDelegate {
     }
     
     public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        let mdlMesh = Primitive.makeCube(device: Renderer.device, size: 1)
+        do {
+            mesh = try MTKMesh(mesh: mdlMesh, device: Renderer.device)
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        
+        vertexBuffer = mesh.vertexBuffers[0].buffer
     }
       
     public func draw(in view: MTKView) {
