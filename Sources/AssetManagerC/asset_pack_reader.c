@@ -41,7 +41,7 @@ uint8_t* asset_pack_get_block(AssetPackFile* apf, int64_t assetBlockLength) {
     
     // Read bytes for this length
     uint8_t* p = malloc( sizeof(uint8_t) * ( assetBlockLength + 1 ) );
-    fread(p, sizeof(char), assetBlockLength, f);
+    fread(p, sizeof(char), assetBlockLength+1, f);
     
     return p;
 }
