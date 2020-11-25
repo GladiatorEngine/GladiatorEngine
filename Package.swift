@@ -28,8 +28,8 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Engine",
-            dependencies: ["AssetManager"],
-            resources: [.process("Metal/Shaders.metal")]),
+            dependencies: ["AssetManager", "ShaderHeaders"],
+            resources: [.copy("Metal")]),
         .testTarget(
             name: "EngineTests",
             dependencies: ["Engine"]),
@@ -41,5 +41,8 @@ let package = Package(
         .testTarget(
             name: "AssetManagerTests",
             dependencies: ["AssetManager"]),
+        .target(
+            name: "ShaderHeaders",
+            dependencies: []),
     ]
 )

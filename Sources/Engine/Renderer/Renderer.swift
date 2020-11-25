@@ -7,22 +7,31 @@
 
 import Foundation
 import AssetManager
+import ShaderHeaders
+import Metal
 import MetalKit
+import simd
+
+// The 256 byte aligned size of our uniform structure
+let alignedUniformsSize = (MemoryLayout<Uniforms>.size + 0xFF) & -0x100
+
+let maxBuffersInFlight = 3
+
+enum RendererError: Error {
+    case badVertexDescriptor
+}
 
 public class Renderer: NSObject, MTKViewDelegate {
+    
+    var timer: Float = 0
+
     static var device: MTLDevice!
     static var commandQueue: MTLCommandQueue!
     var mesh: MTKMesh!
     var vertexBuffer: MTLBuffer!
     var pipelineState: MTLRenderPipelineState!
-    
-    var timer: Float = 0
-    
-    private var assetManager: AssetManager
-    
+
     init(mtkView metalView: MTKView, assetManager: AssetManager) {
-        self.assetManager = assetManager
-        
         guard let device = MTLCreateSystemDefaultDevice() else {
           fatalError("GPU not available")
         }
@@ -30,16 +39,16 @@ public class Renderer: NSObject, MTKViewDelegate {
         Renderer.device = device
         Renderer.commandQueue = device.makeCommandQueue()!
         
-        let mdlMesh = Primitive.makeCube(device: Renderer.device, size: 1)
+        let mdlMesh = Primitive.makeCube(device: device, size: 1)
         do {
-          mesh = try MTKMesh(mesh: mdlMesh, device: device)
+            mesh = try MTKMesh(mesh: mdlMesh, device: device)
         } catch let error {
-          print(error.localizedDescription)
+            print(error.localizedDescription)
         }
         
         vertexBuffer = mesh.vertexBuffers[0].buffer
         
-        let library = try? device.makeDefaultLibrary(bundle: Bundle.module)
+        let library = device.makeDefaultLibrary()
         let vertexFunction = library?.makeFunction(name: "vertex_main")
         let fragmentFunction = library?.makeFunction(name: "fragment_main")
         
@@ -62,30 +71,29 @@ public class Renderer: NSObject, MTKViewDelegate {
     }
     
     public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        
     }
-    
+      
     public func draw(in view: MTKView) {
         guard let descriptor = view.currentRenderPassDescriptor,
         let commandBuffer = Renderer.commandQueue.makeCommandBuffer(),
-        let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else { return }
+        let renderEncoder =
+        commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else { return }
 
-        // 1
+        renderEncoder.setRenderPipelineState(pipelineState)
+        
         timer += 0.05
         var currentTime = sin(timer)
-        // 2
         renderEncoder.setVertexBytes(&currentTime,
                                       length: MemoryLayout<Float>.stride,
                                       index: 1)
         
-        renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
         for submesh in mesh.submeshes {
             renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                      indexCount: submesh.indexCount,
-                                      indexType: submesh.indexType,
-                                      indexBuffer: submesh.indexBuffer.buffer,
-                                      indexBufferOffset: 0)
+                indexCount: submesh.indexCount,
+                indexType: submesh.indexType,
+                indexBuffer: submesh.indexBuffer.buffer,
+                indexBufferOffset: 0)
         }
 
         renderEncoder.endEncoding()
