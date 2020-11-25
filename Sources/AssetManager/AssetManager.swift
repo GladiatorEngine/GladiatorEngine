@@ -60,6 +60,7 @@ public class AssetManager {
                 break
             }
         }
+        asset_pack_deinit(apf)
     }
     
     public func loadAssetPack(data packData: Data) throws {
