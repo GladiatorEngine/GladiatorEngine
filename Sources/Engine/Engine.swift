@@ -1,12 +1,13 @@
 import Foundation
 import AssetManager
+import MetalKit
 
 public struct Engine {
     public private(set) var assetManager: AssetManager
     public private(set) var renderer: Renderer
     
-    public init() {
+    public init(mtkView: MTKView) {
         self.assetManager = AssetManager()
-        self.renderer = Renderer(assetManager: self.assetManager)
+        self.renderer = Renderer(mtkView: mtkView, assetManager: self.assetManager)
     }
 }
