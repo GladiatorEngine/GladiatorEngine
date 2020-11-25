@@ -48,16 +48,17 @@ public class Renderer: NSObject, MTKViewDelegate {
         
         vertexBuffer = mesh.vertexBuffers[0].buffer
         
-        let library = device.makeDefaultLibrary(bundle: Bundle.module)
-        let vertexFunction = library?.makeFunction(name: "vertex_main")
-        let fragmentFunction = library?.makeFunction(name: "fragment_main")
-        
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(mdlMesh.vertexDescriptor)
-        pipelineDescriptor.colorAttachments[0].pixelFormat = metalView.colorPixelFormat
         do {
+            let library = try device.makeDefaultLibrary(bundle: Bundle.module)
+            let vertexFunction = library.makeFunction(name: "vertex_main")
+            let fragmentFunction = library.makeFunction(name: "fragment_main")
+            
+            let pipelineDescriptor = MTLRenderPipelineDescriptor()
+            pipelineDescriptor.vertexFunction = vertexFunction
+            pipelineDescriptor.fragmentFunction = fragmentFunction
+            pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(mdlMesh.vertexDescriptor)
+            pipelineDescriptor.colorAttachments[0].pixelFormat = metalView.colorPixelFormat
+            
             pipelineState = try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
         } catch let error {
             fatalError(error.localizedDescription)
