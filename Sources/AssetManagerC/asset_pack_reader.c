@@ -39,11 +39,6 @@ long asset_pack_location(AssetPackFile* apf) {
 uint8_t* asset_pack_get_block(AssetPackFile* apf, int32_t assetBlockLength) {
     FILE* f = apf->file;
     
-    if(apf->size >= ftell(f)) {
-        uint8_t* p = malloc(sizeof(uint8_t));
-        return p;
-    }
-    
     // Read bytes for this length
     uint8_t* p = malloc( sizeof(uint8_t) * ( assetBlockLength + 1 ) );
     fread(p, sizeof(char), assetBlockLength, f);
