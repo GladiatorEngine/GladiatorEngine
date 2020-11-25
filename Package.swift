@@ -29,7 +29,7 @@ let package = Package(
         .target(
             name: "Engine",
             dependencies: ["AssetManager", "ShaderHeaders"],
-            resources: [.copy("Metal")]),
+            resources: [.process("Metal")]),
         .testTarget(
             name: "EngineTests",
             dependencies: ["Engine"]),
