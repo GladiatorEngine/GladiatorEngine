@@ -4,7 +4,11 @@
 #include <simd/simd.h>
 
 // Including header shared between this Metal shader code and Swift/C code executing Metal API commands
-#include "ShaderTypes.h"
+#include "../include/ShaderTypes.h"
+
+struct VertexIn {
+  float4 position [[ attribute(0) ]];
+};
 
 fragment float4 fragment_main() {
     return float4(1, 0, 0, 1);
