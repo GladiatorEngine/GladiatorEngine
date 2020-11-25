@@ -1,6 +1,7 @@
 import Foundation
 import Crypto
 import AssetManagerC
+@_exported import Assets
 
 public class AssetManager {
     public private(set) var textures: [Texture] = []
@@ -118,6 +119,14 @@ public class AssetManager {
         }
         
         return data
+    }
+    
+    public static func saveAssetPack(assets: [Asset], path: String) {
+        let builder = GEAMAssetPackBuilder(outputPath: path)!
+        for asset in assets {
+            builder.add(asset)
+        }
+        builder.endAssetPack()
     }
     
     public static func saveAsset(path: String, asset: Asset) {

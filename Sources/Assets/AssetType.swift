@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum AssetType: UInt8, Codable {
+@objc public enum AssetType: UInt8, Codable {
     case texture = 0xAA // Texture
     case model = 0xBB // Model
     case animation = 0xCC // Animation

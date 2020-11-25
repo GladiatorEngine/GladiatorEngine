@@ -7,8 +7,8 @@
 
 import Foundation
 
-public struct Model: Asset {
-    public init(sourceData: Data) {
+public class Model: Asset {
+    required public init(sourceData: Data) {
         let amountOfVertices: Int = sourceData.subdata(in: 0..<MemoryLayout<Int>.size).withUnsafeBytes {$0.pointee}
         var vertices = [[Float]]()
         for i in 0..<amountOfVertices {

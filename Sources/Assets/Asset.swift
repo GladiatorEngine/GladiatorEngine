@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Asset: Codable {
+@objc public protocol Asset {
     init(sourceData: Data)
     func assetData() -> Data
     func assetType() -> AssetType

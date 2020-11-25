@@ -7,10 +7,10 @@
 
 import Foundation
 
-public struct Texture: Asset {
+public class Texture: Asset {
     let data: Data
     
-    public init(sourceData: Data) {
+    required public init(sourceData: Data) {
         self.data = sourceData
     }
     
