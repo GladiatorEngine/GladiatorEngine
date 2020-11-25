@@ -41,7 +41,7 @@ public class AssetManager {
         while asset_pack_location(apf) < apf.pointee.size {
             let blockLength = asset_pack_get_next_block_length(apf)
             let block = asset_pack_get_block(apf, blockLength)!
-            let data = Data(Array(UnsafeBufferPointer(start: block, count: Int(blockLength))))
+            let data = Data(Array(UnsafeBufferPointer(start: block, count: Int(blockLength+1))))
             
             let asset = try loadAssetFromData(data: data, hashed: false)
             
