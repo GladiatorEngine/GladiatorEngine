@@ -14,7 +14,7 @@ AssetPackFile* asset_pack_init(const char * __restrict filename) {
     p->file = f;
     
     fseek(f, 0L, SEEK_END); // Go to EOF
-    p->size = ftell(f) - 64; // AssetPack length without hash
+    p->size = ftell(f); // AssetPack length
     fseek(f, 0L, SEEK_SET); // Return to start
     
     // Verify that asset file is exactly AssetPack

@@ -124,7 +124,7 @@ public class AssetManager {
     public static func saveAssetPack(assets: [Asset], path: String) {
         let builder = GEAMAssetPackBuilder(outputPath: path)!
         for asset in assets {
-            builder.add(asset)
+            builder.add(asset: asset)
         }
         builder.endAssetPack()
     }

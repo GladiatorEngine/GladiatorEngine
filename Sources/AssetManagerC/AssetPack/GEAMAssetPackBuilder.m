@@ -6,6 +6,7 @@
 //
 
 #import "GEAMAssetPackBuilder.h"
+@import Assets;
 
 @implementation GEAMAssetPackBuilder
 

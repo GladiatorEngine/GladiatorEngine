@@ -12,13 +12,11 @@
 #include <assert.h>
 #import "asset_pack_reader.h"
 
-@import Assets;
-
 @interface GEAMAssetPackBuilder : NSObject
 {
     FILE *packFile;
 }
 - initWithOutputPath: (NSString*) outputPath;
-- (void) addAsset: (id<Asset>) asset;
+- (void) addAsset: (id) asset NS_SWIFT_NAME(add(asset:));
 - (void) endAssetPack;
 @end
