@@ -27,7 +27,7 @@ AssetPackFile* asset_pack_init(const char * __restrict filename) {
 
 int64_t asset_pack_get_next_block_length(AssetPackFile* apf) {
     // Get block length
-    int32_t assetBlockLength;
+    int64_t assetBlockLength;
     fread(&assetBlockLength, sizeof(int64_t), 1, apf->file);
     return assetBlockLength;
 }
