@@ -1,14 +1,16 @@
 import Foundation
 import Crypto
 import AssetManagerC
+import Logger
 @_exported import Assets
 
 public class AssetManager {
     public private(set) var textures: [Texture] = []
     public private(set) var models: [Model] = []
+    private var logger: Logger
     
-    public init() {
-        
+    public init(logger: Logger) {
+        self.logger = logger
     }
     
     public func loadTextureAsset(path: String) throws {
@@ -17,11 +19,14 @@ public class AssetManager {
             fatalError("\(path) is not a texture")
         }
         
+        self.logger.write(message: "AssetManager has verified that \(path) is a texture asset", type: .debug)
+        
         try loadTextureAsset(data: assetTuple.1)
     }
     
     public func loadTextureAsset(data: Data) throws {
         self.textures.append(Texture(sourceData: data))
+        self.logger.write(message: "AssetManager has loaded a new texture with id \(self.textures.count - 1)", type: .info)
     }
     
     public func loadModelAsset(path: String) throws {
@@ -30,21 +35,28 @@ public class AssetManager {
             fatalError("\(path) is not a model")
         }
         
+        self.logger.write(message: "AssetManager has verified that \(path) is a model asset", type: .debug)
+        
         try loadModelAsset(data: assetTuple.1)
     }
     
     public func loadModelAsset(data: Data) throws {
         self.models.append(Model(sourceData: data))
+        self.logger.write(message: "AssetManager has loaded a new model with id \(self.textures.count - 1)", type: .info)
     }
     
     public func loadAssetPack(path: String) throws {
         let apf = asset_pack_init(path.cString(using: .utf8))!
+        self.logger.write(message: "AssetManager has initialized AssetPack loading session from \(path)", type: .debug)
         while asset_pack_location(apf) < apf.pointee.size {
+            self.logger.write(message: "Loading a new asset block from AssetPack \(path)", type: .debug)
             let blockLength = asset_pack_get_next_block_length(apf)
             let block = asset_pack_get_block(apf, blockLength)!
             let data = Data(Array(UnsafeBufferPointer(start: block, count: Int(blockLength+1))))
             
             let asset = try loadAssetFromData(data: data, hashed: false)
+            
+            self.logger.write(message: "Loaded a new asset block from AssetPack \(path) with type byte \(asset.0.rawValue)", type: .debug)
             
             switch asset.0 {
             case .texture:
@@ -62,9 +74,12 @@ public class AssetManager {
             }
         }
         asset_pack_deinit(apf)
+        self.logger.write(message: "AssetManager has deinitialized AssetPack loading session from \(path)", type: .debug)
+        self.logger.write(message: "AssetManager has loaded blocks from AssetPack \(path)", type: .info)
     }
     
     public func loadAssetPack(data packData: Data) throws {
+        self.logger.write(message: "AssetManager is loading AssetPack from raw data", type: .debug)
         var position = 0
         while position < packData.endIndex {
             let length: Int = packData.subdata(in: position..<position+MemoryLayout<Int>.size).withUnsafeBytes {$0.pointee} + 1
@@ -86,25 +101,35 @@ public class AssetManager {
                 break
             }
         }
+        self.logger.write(message: "AssetManager has loaded AssetPack from raw data", type: .debug)
     }
     
     private func loadAsset(path: String) throws -> (AssetType, Data) {
+        self.logger.write(message: "AssetManager is loading asset from \(path)", type: .debug)
+        defer {
+            self.logger.write(message: "AssetManager had loaded asset from \(path)", type: .debug)
+        }
         return try loadAssetFromData(data: try Data(contentsOf: URL(fileURLWithPath: path)))
     }
     
     private func loadAssetFromData(data fullAsset: Data, hashed: Bool = true) throws -> (AssetType, Data) {
+        self.logger.write(message: "AssetManager is loading asset from data \(hashed ? "with" : "without") hash", type: .debug)
         let assetTypeByte: UInt8 = fullAsset.subdata(in: 0..<1).withUnsafeBytes {$0.pointee}
         
         guard let assetType = AssetType(rawValue: assetTypeByte) else {throw AssetLoadErrors.failedToParseType(byte: assetTypeByte)}
         let data = fullAsset.subdata(in: 1..<(hashed ? fullAsset.endIndex-64 : fullAsset.endIndex))
         
         if hashed {
+            self.logger.write(message: "AssetManager is verifying asset's data", type: .debug)
             // Verify data with hash
             let hash = fullAsset.subdata(in: fullAsset.endIndex-64..<fullAsset.endIndex)
             if Data() + SHA512.hash(data: data) != hash {
                 fatalError("Asset hash is not valid!")
             }
+            self.logger.write(message: "AssetManager has verified asset's data", type: .debug)
         }
+        
+        self.logger.write(message: "AssetManager is loaded asset from data \(hashed ? "with" : "without") hash", type: .debug)
         
         return (assetType, data)
     }

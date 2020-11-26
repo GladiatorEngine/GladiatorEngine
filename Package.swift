@@ -28,7 +28,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Engine",
-            dependencies: ["AssetManager", "ShaderHeaders"],
+            dependencies: ["AssetManager", "ShaderHeaders", "Logger"],
             resources: [.process("Metal")]),
         .testTarget(
             name: "EngineTests",
@@ -38,7 +38,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Crypto", package: "swift-crypto"),
                 .byName(name: "AssetManagerC"),
-                .byName(name: "Assets")
+                .byName(name: "Assets"),
+                .byName(name: "Logger")
             ]),
         .target(
             name: "AssetManagerC",
@@ -51,6 +52,12 @@ let package = Package(
             dependencies: ["AssetManager"]),
         .target(
             name: "ShaderHeaders",
+            dependencies: []),
+        .target(
+            name: "Logger",
+            dependencies: ["LoggerC"]),
+        .target(
+            name: "LoggerC",
             dependencies: []),
     ]
 )
