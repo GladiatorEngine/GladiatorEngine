@@ -58,9 +58,10 @@ extension LoggerType {
             return
         }
         #endif
+        let fullMessage = "[\(Date().description) - \(type.loggableString())] \(message)"
         if type.rawValue >= Logger.loggingPriorityLevel {
-            print("[\(Date().description) - \(type.loggableString())] \(message)")
+            print(fullMessage)
         }
-        logger_write(message.cString(using: .utf8), self.logger)
+        logger_write(fullMessage.cString(using: .utf8), self.logger)
     }
 }
