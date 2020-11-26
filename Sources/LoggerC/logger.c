@@ -9,7 +9,7 @@
 
 LoggerFile* logger_init(const char * __restrict filename) {
     printf("Opening log file in %s\n", filename);
-    FILE* f = fopen(filename, "wb");
+    FILE* f = fopen(filename, "w");
     LoggerFile* p = malloc(sizeof(LoggerFile));
     
     p->file = f;
