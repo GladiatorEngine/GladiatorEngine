@@ -20,11 +20,8 @@ LoggerFile* logger_init(const char * __restrict filename) {
 }
 
 void logger_write(const char * __restrict message, LoggerFile* lf) {
-    size_t length = strlen(message);
-    char* fMsg = malloc(length+1);
-    strcpy(fMsg, message);
-    strcat(fMsg, "\n");
-    fputs(fMsg, lf->file);
+    fputs(message, lf->file);
+    fputc('\n', lf->file);
 }
 
 void logger_deinit(LoggerFile* lf) {
