@@ -7,8 +7,8 @@
 
 import Foundation
 
-public class Model: Asset {
-    required public init(sourceData: Data) {
+@objc public class Model: NSObject, Asset {
+    @objc required public init(sourceData: Data) {
         let amountOfVertices: Int = sourceData.subdata(in: 0..<MemoryLayout<Int>.size).withUnsafeBytes {$0.pointee}
         var vertices = [Vertex]()
         for i in 0..<amountOfVertices {
@@ -18,11 +18,11 @@ public class Model: Asset {
         self.vertices = vertices
     }
     
-    public init(vertices: [Vertex]) {
+    @objc public init(vertices: [Vertex]) {
         self.vertices = vertices
     }
     
-    public func assetData() -> Data {
+    @objc public func assetData() -> Data {
         var data = Data()
         
         data = data + withUnsafeBytes(of: self.vertices.count) { Data($0) }
@@ -34,10 +34,10 @@ public class Model: Asset {
         return data
     }
     
-    public func assetType() -> AssetType {
+    @objc public func assetType() -> AssetType {
         return .model
     }
     
-    public private(set) var vertices: [Vertex]
+    @objc public private(set) var vertices: [Vertex]
 }
 

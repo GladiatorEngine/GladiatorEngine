@@ -8,7 +8,7 @@
 import Foundation
 
 @objc public protocol Asset {
-    init(sourceData: Data)
-    func assetData() -> Data
-    func assetType() -> AssetType
+    @objc init(sourceData: Data)
+    @objc func assetData() -> Data
+    @objc func assetType() -> AssetType
 }

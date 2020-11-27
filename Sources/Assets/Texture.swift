@@ -7,18 +7,18 @@
 
 import Foundation
 
-public class Texture: Asset {
+@objc public class Texture: NSObject, Asset {
     let data: Data
     
-    required public init(sourceData: Data) {
+    @objc required public init(sourceData: Data) {
         self.data = sourceData
     }
     
-    public func assetData() -> Data {
+    @objc public func assetData() -> Data {
         return self.data
     }
     
-    public func assetType() -> AssetType {
+    @objc public func assetType() -> AssetType {
         return .texture
     }
 }

@@ -7,17 +7,17 @@
 
 import Foundation
 
-public struct Vertex: VertexStorable {
+@objc public class Vertex: NSObject, VertexStorable {
     
-    public private(set) var coordinate: Coordinate
-    public private(set) var id: UUID
+    @objc public private(set) var coordinate: Coordinate
+    @objc public private(set) var id: UUID
     
-    public init(id: UUID = UUID(), coordinate: Coordinate) {
+    @objc public init(id: UUID = UUID(), coordinate: Coordinate) {
         self.id = id
         self.coordinate = coordinate
     }
     
-    public func toData() -> Data {
+    @objc public func toData() -> Data {
         var data = Data()
         
         // Add id
@@ -29,39 +29,39 @@ public struct Vertex: VertexStorable {
         return data
     }
     
-    public static func dataSize() -> Int {
+    @objc public static func dataSize() -> Int {
         MemoryLayout<UUID>.size + Coordinate.dataSize()
     }
     
-    public init(data: Data) {
+    @objc required public init(data: Data) {
         self.id = data.subdata(in: 0..<MemoryLayout<UUID>.size).withUnsafeBytes {$0.pointee}
         self.coordinate = Coordinate(data: data.subdata(in: MemoryLayout<UUID>.size..<data.endIndex))
     }
 }
 
 extension Vertex {
-    public struct Coordinate: VertexStorable {
+    @objc public class Coordinate: NSObject, VertexStorable {
         public typealias PrecisionType = Float
         
-        public var x: PrecisionType
-        public var y: PrecisionType
-        public var z: PrecisionType
+        @objc public var x: PrecisionType
+        @objc public var y: PrecisionType
+        @objc public var z: PrecisionType
         
-        public init(x: PrecisionType, y: PrecisionType, z: PrecisionType) {
+        @objc public init(x: PrecisionType, y: PrecisionType, z: PrecisionType) {
             self.x = x
             self.y = y
             self.z = z
         }
         
-        public func toData() -> Data {
+        @objc public func toData() -> Data {
             [x, y, z].map { v -> Data in withUnsafeBytes(of: v) { Data($0) } }.reduce(Data()) { $0 + $1 }
         }
         
-        public static func dataSize() -> Int {
+        @objc public static func dataSize() -> Int {
             MemoryLayout<PrecisionType>.size * 3
         }
         
-        public init(data: Data) {
+        @objc required public init(data: Data) {
             var coords = Array<PrecisionType>()
             for i in 0..<3 {
                 coords.append(data.subdata(in: MemoryLayout<PrecisionType>.size*i..<MemoryLayout<PrecisionType>.size*(i+1)).withUnsafeBytes {$0.pointee})
@@ -73,8 +73,8 @@ extension Vertex {
     }
 }
 
-public protocol VertexStorable {
-    func toData() -> Data
-    static func dataSize() -> Int
-    init(data: Data)
+@objc public protocol VertexStorable {
+    @objc func toData() -> Data
+    @objc static func dataSize() -> Int
+    @objc init(data: Data)
 }

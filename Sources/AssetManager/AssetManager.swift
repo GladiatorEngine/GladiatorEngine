@@ -4,16 +4,16 @@ import AssetManagerC
 import Logger
 @_exported import Assets
 
-public class AssetManager {
-    public private(set) var textures: [Texture] = []
-    public private(set) var models: [Model] = []
-    private var logger: Logger
+@objc public class AssetManager: NSObject {
+    @objc public private(set) var textures: [Texture] = []
+    @objc public private(set) var models: [Model] = []
+    @objc private var logger: Logger
     
-    public init(logger: Logger = Logger()) {
+    @objc public init(logger: Logger = Logger()) {
         self.logger = logger
     }
     
-    public func loadTextureAsset(path: String) throws {
+    @objc public func loadTextureAsset(path: String) throws {
         let assetTuple = try self.loadAsset(path: path)
         if assetTuple.0 != .texture {
             fatalError("\(path) is not a texture")
@@ -24,12 +24,12 @@ public class AssetManager {
         try loadTextureAsset(data: assetTuple.1)
     }
     
-    public func loadTextureAsset(data: Data) throws {
+    @objc public func loadTextureAsset(data: Data) throws {
         self.textures.append(Texture(sourceData: data))
         self.logger.write(message: "AssetManager has loaded a new texture with id \(self.textures.count - 1)", type: .info)
     }
     
-    public func loadModelAsset(path: String) throws {
+    @objc public func loadModelAsset(path: String) throws {
         let assetTuple = try self.loadAsset(path: path)
         if assetTuple.0 != .model {
             fatalError("\(path) is not a model")
@@ -40,12 +40,12 @@ public class AssetManager {
         try loadModelAsset(data: assetTuple.1)
     }
     
-    public func loadModelAsset(data: Data) throws {
+    @objc public func loadModelAsset(data: Data) throws {
         self.models.append(Model(sourceData: data))
         self.logger.write(message: "AssetManager has loaded a new model with id \(self.textures.count - 1)", type: .info)
     }
     
-    public func loadAssetPack(path: String) throws {
+    @objc public func loadAssetPack(path: String) throws {
         let apf = asset_pack_init(path.cString(using: .utf8))!
         self.logger.write(message: "AssetManager has initialized AssetPack loading session from \(path)", type: .debug)
         while asset_pack_location(apf) < apf.pointee.size {
@@ -78,7 +78,7 @@ public class AssetManager {
         self.logger.write(message: "AssetManager has loaded blocks from AssetPack \(path)", type: .info)
     }
     
-    public func loadAssetPack(data packData: Data) throws {
+    @objc public func loadAssetPack(data packData: Data) throws {
         self.logger.write(message: "AssetManager is loading AssetPack from raw data", type: .debug)
         var position = 0
         while position < packData.endIndex {
@@ -134,7 +134,7 @@ public class AssetManager {
         return (assetType, data)
     }
     
-    public static func buildAssetPackData(assets: [Asset]) -> Data {
+    @objc public static func buildAssetPackData(assets: [Asset]) -> Data {
         var data = Data()
         
         for asset in assets {
@@ -146,7 +146,7 @@ public class AssetManager {
         return data
     }
     
-    public static func saveAssetPack(assets: [Asset], path: String) {
+    @objc public static func saveAssetPack(assets: [Asset], path: String) {
         let builder = GEAMAssetPackBuilder(outputPath: path)!
         for asset in assets {
             builder.add(asset: asset)
@@ -154,11 +154,11 @@ public class AssetManager {
         builder.endAssetPack()
     }
     
-    public static func saveAsset(path: String, asset: Asset) {
+    @objc public static func saveAsset(path: String, asset: Asset) {
         return saveAsset(path: path, type: asset.assetType(), data: asset.assetData())
     }
     
-    public static func saveAsset(path: String, type: AssetType, data: Data) {
+    @objc public static func saveAsset(path: String, type: AssetType, data: Data) {
         do {
             let typeByteData = Data([type.rawValue])
             let hash = SHA512.hash(data: data)
