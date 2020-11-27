@@ -40,12 +40,12 @@ extension LoggerType {
     private static let loggingPriorityLevel = LoggerType.highWarning.rawValue
     #endif
     
-    @objc public private(set) var path: String
-    private var logger: UnsafeMutablePointer<LoggerFile>
+    @objc public private(set) var path: String?
+    private var logger: UnsafeMutablePointer<LoggerFile>?
     
-    @objc public init(path: String) {
+    @objc public init(path: String? = nil) {
         self.path = path
-        self.logger = logger_init(path.cString(using: .utf8))
+        self.logger = path != nil ? logger_init(path!.cString(using: .utf8)) : nil
     }
     
     deinit {
@@ -62,6 +62,8 @@ extension LoggerType {
         if type.rawValue >= Logger.loggingPriorityLevel {
             print(fullMessage)
         }
-        logger_write(fullMessage.cString(using: .utf8), self.logger)
+        if self.logger != nil {
+            logger_write(fullMessage.cString(using: .utf8), self.logger)
+        }
     }
 }

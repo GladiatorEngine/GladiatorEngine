@@ -9,7 +9,7 @@ public class AssetManager {
     public private(set) var models: [Model] = []
     private var logger: Logger
     
-    public init(logger: Logger) {
+    public init(logger: Logger = Logger()) {
         self.logger = logger
     }
     
