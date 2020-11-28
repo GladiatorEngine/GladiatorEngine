@@ -34,8 +34,12 @@ import NIOSSL
     /// - Throws: any SwiftNIO exception
     @objc public func start(host: String, port: Int) throws {
         self.group = MultiThreadedEventLoopGroup(numberOfThreads: GNServer.numberOfThreads)
+        
+        let certificates: [NIOSSLCertificate] = try NIOSSLCertificate.fromPEMFile(self.certificatePath)
 
-        let server = Server.insecure(group: self.group)
+        let server = Server.secure(group: self.group,
+                                   certificateChain: certificates,
+                                   privateKey: try NIOSSLPrivateKey(file: self.privateKeyPath, format: .pem))
             .withServiceProviders([GameNetworkProvider()])
             .bind(host: host, port: port)
 
