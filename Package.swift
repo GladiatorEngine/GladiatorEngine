@@ -24,8 +24,8 @@ let package = Package(
             name: "Logger",
             targets: ["Logger"]),
         .executable(
-            name: "GameNetworkServer",
-            targets: ["GameNetworkServer"]),
+            name: "game-network-server-runner",
+            targets: ["GameNetworkServerRunner"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -78,7 +78,7 @@ let package = Package(
                 .product(name: "NIOSSL", package: "swift-nio-ssl"),
             ]),
         .target(
-            name: "GameNetworkServer",
+            name: "GameNetworkServerRunner",
             dependencies: [
                 .byName(name: "Network"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
