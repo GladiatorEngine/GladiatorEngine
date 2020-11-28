@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Network
+import GameNetwork
 import ArgumentParser
 
 struct GameNetworkServerRunner: ParsableCommand {

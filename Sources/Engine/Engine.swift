@@ -3,7 +3,7 @@ import MetalKit
 
 @_exported import Logger
 @_exported import AssetManager
-@_exported import Network
+@_exported import GameNetwork
 
 /// Main GladiatorEngine class, it controls eveything
 @objc public class Engine: NSObject {
