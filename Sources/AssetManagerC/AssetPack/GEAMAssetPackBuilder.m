@@ -35,6 +35,9 @@
     
     // Write data itself
     fwrite(bytePtr, data.length, 1, packFile);
+    
+    // Flush changes to file immediately
+    fflush(packFile);
 }
 
 - (void)endAssetPack {
