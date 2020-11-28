@@ -37,7 +37,7 @@ import NIOSSL
 
         let server = Server.insecure(group: self.group)
             .withServiceProviders([GameNetworkProvider()])
-            .bind(host: "localhost", port: 0)
+            .bind(host: host, port: port)
 
         server.map {
             $0.channel.localAddress
