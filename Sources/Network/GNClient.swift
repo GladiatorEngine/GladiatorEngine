@@ -15,7 +15,7 @@ import NIO
     private var handler: ServerResponseHandler
     
     private var group: MultiThreadedEventLoopGroup!
-    private var channel: Channel!
+    public private(set) var channel: Channel!
     
     @objc public override init() {
         self.handler = ServerResponseHandler()

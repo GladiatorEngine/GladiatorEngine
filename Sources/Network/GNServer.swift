@@ -15,7 +15,7 @@ import NIOSSL
     private var handler: ServerResponseHandler
     
     private var group: MultiThreadedEventLoopGroup!
-    private var channel: Channel!
+    public private(set) var channel: Channel!
     
     private var sslContext: NIOSSLContext
     
