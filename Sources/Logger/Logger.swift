@@ -41,6 +41,8 @@ extension LoggerType {
     private static let loggingPriorityLevel = LoggerType.highWarning.rawValue
     #endif
     
+    private let loggerQueue: DispatchQueue
+    
     @objc public private(set) var path: String?
     private var logger: UnsafeMutablePointer<LoggerFile>?
     
@@ -49,10 +51,13 @@ extension LoggerType {
     @objc public init(path: String? = nil) {
         self.path = path
         self.logger = path != nil ? logger_init(path!.cString(using: .utf8)) : nil
+        self.loggerQueue = DispatchQueue(label: "logger.\(path != nil ? URL(fileURLWithPath: path!).lastPathComponent : "console-only")")
     }
     
     deinit {
-        logger_deinit(self.logger)
+        self.loggerQueue.sync {
+            logger_deinit(self.logger)
+        }
     }
     
     /// Writes message to log
@@ -60,17 +65,19 @@ extension LoggerType {
     ///   - message: message that should be written to log
     ///   - type: message's type, priority
     @objc public func write(message: String, type: LoggerType) {
-        #if !DEBUG
-        if type == .debug {
-            return
-        }
-        #endif
-        let fullMessage = "[\(Date().isoString()) - \(type.loggableString())] \(message)"
-        if type.rawValue >= Logger.loggingPriorityLevel {
-            print(fullMessage)
-        }
-        if self.logger != nil {
-            logger_write(fullMessage.cString(using: .utf8), self.logger)
+        self.loggerQueue.async {
+            #if !DEBUG
+            if type == .debug {
+                return
+            }
+            #endif
+            let fullMessage = "[\(Date().isoString()) - \(type.loggableString())] \(message)"
+            if type.rawValue >= Logger.loggingPriorityLevel {
+                print(fullMessage)
+            }
+            if self.logger != nil {
+                logger_write(fullMessage.cString(using: .utf8), self.logger)
+            }
         }
     }
 }
