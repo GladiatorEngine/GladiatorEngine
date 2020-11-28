@@ -17,6 +17,12 @@ let package = Package(
         .library(
             name: "AssetManager",
             targets: ["AssetManager"]),
+        .library(
+            name: "GameNetwork",
+            targets: ["Network"]),
+        .library(
+            name: "Logger",
+            targets: ["Logger"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
