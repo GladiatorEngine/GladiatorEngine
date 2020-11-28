@@ -32,7 +32,9 @@ struct GameNetworkServerRunner: ParsableCommand {
     mutating func run() throws {
         let server = GNServer(certificatePath: certificate, privateKeyPath: key)
         
+        print("Starting GNServer listening on \(host):\(port)")
         try server.start(host: host, port: port)
+        print("Listening...")
         try server.channel.closeFuture.wait()
     }
 }

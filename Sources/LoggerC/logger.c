@@ -26,5 +26,9 @@ void logger_write(const char * __restrict message, LoggerFile* lf) {
 }
 
 void logger_deinit(LoggerFile* lf) {
-    fclose(lf->file);
+    if (lf != NULL) {
+        if (lf->file != NULL) {
+            fclose(lf->file);
+        }
+    }
 }
