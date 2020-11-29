@@ -18,31 +18,27 @@ let package = Package(
             name: "AssetManager",
             targets: ["AssetManager"]),
         .library(
-            name: "GameNetwork",
-            targets: ["GameNetwork"]),
-        .library(
             name: "Logger",
             targets: ["Logger"]),
-        .executable(
-            name: "game-network-server-runner",
-            targets: ["GameNetworkServerRunner"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-crypto.git", .exact("1.1.2")),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.3.0"),
-        .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
-        .package(url: "https://github.com/apple/swift-nio-ssl.git", from: "2.0.0"),
-        .package(url: "https://github.com/grpc/grpc-swift.git", from: "1.0.0-alpha.20"),
-        .package(name: "SwiftProtobuf", url: "https://github.com/apple/swift-protobuf.git", from: "1.6.0"),
+        .package(url: "https://github.com/stdStudios/GameNetwork", .branch("main"))
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Engine",
-            dependencies: ["AssetManager", "ShaderHeaders", "Logger", "GameNetwork"],
+            dependencies: [
+                .byName(name: "AssetManager"),
+                .byName(name: "ShaderHeaders"),
+                .byName(name: "Logger"),
+                .product(name: "GameNetwork", package: "GameNetwork")
+            ],
             resources: [.process("Metal")]),
         .testTarget(
             name: "EngineTests",
@@ -73,19 +69,5 @@ let package = Package(
         .target(
             name: "LoggerC",
             dependencies: []),
-        .target(
-            name: "GameNetwork",
-            dependencies: [
-                .product(name: "NIO", package: "swift-nio"),
-                .product(name: "NIOSSL", package: "swift-nio-ssl"),
-                .product(name: "GRPC", package: "grpc-swift"),
-                .product(name: "SwiftProtobuf", package: "SwiftProtobuf"),
-            ]),
-        .target(
-            name: "GameNetworkServerRunner",
-            dependencies: [
-                .byName(name: "GameNetwork"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ]),
     ]
 )

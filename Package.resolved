@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "GameNetwork",
+        "repositoryURL": "https://github.com/stdStudios/GameNetwork",
+        "state": {
+          "branch": "main",
+          "revision": "9981175a4e82c8c0ffae2559c1a5cf73d53ab6c7",
+          "version": null
+        }
+      },
+      {
         "package": "grpc-swift",
         "repositoryURL": "https://github.com/grpc/grpc-swift.git",
         "state": {
