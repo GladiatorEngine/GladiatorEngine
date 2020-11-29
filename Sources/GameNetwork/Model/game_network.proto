@@ -74,7 +74,6 @@ message Peer {
     int32 port = 2; // Port of the peer
 }
 message PeerRegistrationRequest {
-    string licenseID = 1; // License's ID
     string licenseToken = 2; // License's token
     int32 port = 3; // Device's port determined using STUN and TURN
 }
@@ -82,7 +81,6 @@ message PeerRegistrationReply {
     Peer peer = 1; // Your peer
 }
 message PeerListRequest {
-    string licenseID = 1; // License's ID
     string licenseToken = 2; // License's token
 }
 message PeerListReply {
