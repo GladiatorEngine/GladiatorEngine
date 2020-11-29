@@ -39,17 +39,13 @@ import NIOSSL
         
         let certificates: [NIOSSLCertificate] = try NIOSSLCertificate.fromPEMFile(self.certificatePath)
 
-        let server = Server.secure(group: self.group,
+        let server = try Server.secure(group: self.group,
                                    certificateChain: certificates,
                                    privateKey: try NIOSSLPrivateKey(file: self.privateKeyPath, format: .pem))
             .withServiceProviders([GameNetworkProvider()])
             .bind(host: host, port: port)
-
-        server.map { s -> SocketAddress? in
-            self.channel = s.channel
-            return s.channel.localAddress
-        }.whenSuccess { address in
-            print("server started on port \(address!.port!)")
-        }
+            .wait()
+        self.channel = server.channel
+        print("server started on port \(server.channel.localAddress!.port!)")
     }
 }
