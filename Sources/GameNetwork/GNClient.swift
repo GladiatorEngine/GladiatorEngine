@@ -23,8 +23,13 @@ import GRPC
     @objc public init(host: String, port: Int) {
         self.group = MultiThreadedEventLoopGroup(numberOfThreads: GNClient.numberOfThreads)
 
-        // Configure the channel, we're not using TLS so the connection is `insecure`.
-        let channel = ClientConnection.secure(group: self.group)
+        #if DEBUG
+        let conn = ClientConnection.insecure(group: self.group)
+        #else
+        let conn = ClientConnection.secure(group: self.group)
+        #endif
+        
+        let channel = conn
             .connect(host: host, port: port)
 
         self.greeter = GameNetwork_GreeterClient(channel: channel)

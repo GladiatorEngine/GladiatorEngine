@@ -39,10 +39,14 @@ import NIOSSL
         
         let certificates: [NIOSSLCertificate] = try NIOSSLCertificate.fromPEMFile(self.certificatePath)
 
-        let server = try Server.secure(group: self.group,
-                                   certificateChain: certificates,
-                                   privateKey: try NIOSSLPrivateKey(file: self.privateKeyPath, format: .pem))
-            .withServiceProviders([GameNetworkProvider()])
+        #if DEBUG
+        let s = Server.insecure(group: self.group)
+        #else
+        let s = Server.secure(group: self.group,
+                              certificateChain: certificates,
+                              privateKey: try NIOSSLPrivateKey(file: self.privateKeyPath, format: .pem))
+        #endif
+        let server = try s.withServiceProviders([GameNetworkProvider()])
             .bind(host: host, port: port)
             .wait()
         self.channel = server.channel
