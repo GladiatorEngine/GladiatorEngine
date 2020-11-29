@@ -25,8 +25,7 @@ import MetalKit
     ///   - host: game network server's hostname
     ///   - port: game network server's port
     /// - Throws: any SwiftNIO exception
-    @objc public func setupNetwork(host: String, port: Int) throws {
-        self.gameNetworkClient = GNClient()
-        try self.gameNetworkClient.connectTo(host: host, port: port)
+    @objc public func setupNetwork(host: String, port: Int) {
+        self.gameNetworkClient = GNClient(host: host, port: port)
     }
 }

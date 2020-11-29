@@ -6,17 +6,37 @@
 //
 
 import Foundation
+import NIO
+import GRPC
 
 /// GNClient is used to connect to GameNetwork server
 @objc public class GNClient: NSObject {
-    @objc public override init() {
-    }
+    private static let numberOfThreads = 4
     
-    /// Connects GNClient to GameNetwork server
+    private var group: MultiThreadedEventLoopGroup
+    private var greeter: GameNetwork_GreeterClient
+    
+    /// Creates GNClient connected to host with port
     /// - Parameters:
     ///   - host: host of GN's server
     ///   - port: port of GN's server
-    /// - Throws: any exception
-    @objc public func connectTo(host: String, port: Int) throws {
+    @objc public init(host: String, port: Int) {
+        self.group = MultiThreadedEventLoopGroup(numberOfThreads: GNClient.numberOfThreads)
+
+        // Configure the channel, we're not using TLS so the connection is `insecure`.
+        let channel = ClientConnection.secure(group: self.group)
+            .connect(host: host, port: port)
+
+        self.greeter = GameNetwork_GreeterClient(channel: channel)
+    }
+    
+    deinit {
+        try! group.syncShutdownGracefully()
+    }
+    
+    @objc public func greet(name: String) throws -> String {
+        return try greeter.sayHello(GameNetwork_HelloRequest.with {
+            $0.name = name
+        }).response.wait().message
     }
 }
