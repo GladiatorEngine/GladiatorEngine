@@ -18,6 +18,8 @@ import NIOSSL
     private var certificatePath: String
     private var privateKeyPath: String
     
+    public private(set) var channel: Channel!
+    
     @objc public init(certificatePath: String, privateKeyPath: String) {
         self.certificatePath = certificatePath
         self.privateKeyPath = privateKeyPath
@@ -43,8 +45,9 @@ import NIOSSL
             .withServiceProviders([GameNetworkProvider()])
             .bind(host: host, port: port)
 
-        server.map {
-            $0.channel.localAddress
+        server.map { s -> SocketAddress? in
+            self.channel = s.channel
+            return s.channel.localAddress
         }.whenSuccess { address in
             print("server started on port \(address!.port!)")
         }
